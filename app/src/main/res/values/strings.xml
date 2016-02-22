@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">WeatherToday</string>
+    <string name="action_settings">Settings</string>
+    <string name="day_header">Today</string>
+    <string name="week_header">Week</string>
+    <string name="setting_header">Setting</string>
+    <string name="city_text">City</string>
+    <string name="days_of_week_text">Days</string>
+    <string name="lang_text">Language</string>
+</resources>
