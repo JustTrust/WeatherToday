@@ -6,9 +6,8 @@ import java.util.ArrayList;
  *
  */
 public class InternalData {
-
-    ArrayList<CurrentCondition> current_condition;
-    ArrayList<Request> request;
-    ArrayList<Weather> weather;
-
+    public ArrayList<ErrorData> error;
+    public ArrayList<CurrentCondition> current_condition;
+    public ArrayList<Request> request;
+    public ArrayList<Weather> weather;
 }

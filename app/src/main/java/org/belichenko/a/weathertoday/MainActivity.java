@@ -14,7 +14,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
+import org.belichenko.a.weathertoday.data_structure.ErrorData;
 import org.belichenko.a.weathertoday.data_structure.MainData;
 import org.belichenko.a.weathertoday.fragments.SettingFragment;
 import org.belichenko.a.weathertoday.fragments.TodayFragment;
@@ -86,12 +88,20 @@ public class MainActivity extends AppCompatActivity implements MyConstants{
             @Override
             public void success(MainData cd, Response response) {
                 if (cd != null) {
-                    mainData = cd;
+                    if (cd.data.error == null) {
+                        mainData = cd;
+                    }else if(cd.data.error.size()>0){
+                        for (ErrorData errorData : cd.data.error) {
+                            Toast.makeText(MainActivity.this, errorData.msg, Toast.LENGTH_LONG).show();
+                        }
+                        mainData = null;
+                    }
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
+                Toast.makeText(MainActivity.this, error.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                 Log.d(TAG, "failure() called with: " + "error = [" + error + "]");
             }
         });

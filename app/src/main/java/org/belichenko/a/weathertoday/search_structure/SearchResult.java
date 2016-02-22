@@ -8,7 +8,8 @@ import java.util.ArrayList;
 public class SearchResult {
     public ArrayList<AreaName> areaName;
     public ArrayList<Country> country;
-
+    public String latitude;
+    public String longitude;
 
     public String getCity() {
         String result = "";

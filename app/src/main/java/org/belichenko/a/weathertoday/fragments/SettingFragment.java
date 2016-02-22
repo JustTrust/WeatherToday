@@ -45,7 +45,6 @@ public class SettingFragment extends Fragment implements MyConstants {
     View rootView;
     private AutoCompleteAdapter adapter;
     private static final String TAG = "SettingFragment ";
-    private static final String MAX_RESULTS = "5";
     private static SettingFragment fragment = new SettingFragment();
 
     public SettingFragment() {
@@ -128,12 +127,26 @@ public class SettingFragment extends Fragment implements MyConstants {
         cityName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SearchResult  result=  (SearchResult) parent.getItemAtPosition(position);
+                SearchResult result = (SearchResult) parent.getItemAtPosition(position);
                 cityName.setText(result.getCity());
+                writeCityToPreference(result);
             }
         });
         readSettingsFromPreferences();
         return rootView;
+    }
+
+    private void writeCityToPreference(SearchResult result) {
+        if (result == null){
+            return;
+        }
+        SharedPreferences mPrefs = App.getAppContext()
+                .getSharedPreferences(STORAGE_OF_SETTINGS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor edit = mPrefs.edit();
+        edit.putString(STORED_CITY, result.getCity());
+        edit.putString(STORED_LATITUDE, result.latitude);
+        edit.putString(STORED_LONGITUDE, result.longitude);
+        edit.apply();
     }
 
     private void readSettingsFromPreferences() {

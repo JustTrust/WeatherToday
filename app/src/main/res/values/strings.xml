@@ -7,4 +7,5 @@
     <string name="city_text">City</string>
     <string name="days_of_week_text">Days</string>
     <string name="lang_text">Language</string>
+    <string name="temp_text">Temperature in</string>
 </resources>

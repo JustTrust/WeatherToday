@@ -24,7 +24,8 @@ import retrofit.client.Response;
 /**
  *
  */
-public class AutoCompleteAdapter<T extends SearchResult> extends ArrayAdapter implements Filterable, MyConstants {
+public class AutoCompleteAdapter<T extends SearchResult> extends ArrayAdapter
+        implements Filterable, MyConstants {
 
     private static final String MAX_RESULTS = "5";
     public static final String TAG = "updateCityFromSite()";
