@@ -16,6 +16,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import org.belichenko.a.weathertoday.data_structure.ErrorData;
 import org.belichenko.a.weathertoday.data_structure.MainData;
 import org.belichenko.a.weathertoday.fragments.SettingFragment;
@@ -39,7 +41,9 @@ public class MainActivity extends AppCompatActivity implements MyConstants{
 
     // The {@link ViewPager} that will host the section contents.
     private ViewPager mViewPager;
+    // Keeps all information about weather
     MainData mainData;
+    // Icons for tabs
     private int[] tabIcons = {
             R.drawable.ic_event_white_24dp,
             R.drawable.ic_date_range_white_24dp,
@@ -74,6 +78,31 @@ public class MainActivity extends AppCompatActivity implements MyConstants{
         });
 
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences sharedPref = getSharedPreferences(STORAGE_OF_SETTINGS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor edit = sharedPref.edit();
+        if (mainData != null) {
+            Gson gson = new Gson();
+            String md = gson.toJson(mainData);
+            edit.putString(STORED_MAIN_DATA, md);
+            edit.apply();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sharedPref = getSharedPreferences(STORAGE_OF_SETTINGS, Context.MODE_PRIVATE);
+        String md = sharedPref.getString(STORED_MAIN_DATA, null);
+        if (md != null) {
+            Gson gson = new Gson();
+            mainData = gson.fromJson(md.toString(), MainData.class);
+        }
+    }
+
     private void updateDataFromSite() {
 
         SharedPreferences sharedPref = getSharedPreferences(STORAGE_OF_SETTINGS, Context.MODE_PRIVATE);
