@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/appbar_padding_top"
             android:layout_marginRight="@dimen/appbar_padding_top"
-            android:layout_weight="0.4"
+            android:layout_weight="0.3"
             android:text="@string/city_text"
             android:textAppearance="?android:attr/textAppearanceMedium"
             tools:text="City" />
@@ -30,7 +30,7 @@
             android:id="@+id/city_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.6"
+            android:layout_weight="0.7"
             android:completionThreshold="4"
             tools:text="City name" />
     </LinearLayout>
@@ -48,7 +48,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/appbar_padding_top"
             android:layout_marginRight="@dimen/appbar_padding_top"
-            android:layout_weight="0.3"
+            android:layout_weight="0.2"
             android:text="@string/days_of_week_text"
             android:textAppearance="?android:attr/textAppearanceMedium"
             tools:text="Days" />
@@ -72,14 +72,15 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_weight="0.6"
-            android:max="7" />
+            android:layout_weight="0.7"
+            android:max="6" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/fab_margin"
         android:orientation="horizontal"
         android:weightSum="1">
 
@@ -89,7 +90,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/appbar_padding_top"
             android:layout_marginRight="@dimen/appbar_padding_top"
-            android:layout_weight="0.4"
+            android:layout_weight="0.6"
             android:text="@string/lang_text"
             android:textAppearance="?android:attr/textAppearanceMedium"
             tools:text="Language" />
@@ -98,13 +99,15 @@
             android:id="@+id/rg_language"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.6"
+            android:layout_weight="0.4"
             android:orientation="horizontal">
 
             <RadioButton
                 android:id="@+id/radioButton_ru"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/appbar_padding_top"
+                android:layout_marginEnd="@dimen/appbar_padding_top"
                 android:text="ru" />
 
             <RadioButton
@@ -128,7 +131,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/appbar_padding_top"
             android:layout_marginRight="@dimen/appbar_padding_top"
-            android:layout_weight="0.4"
+            android:layout_weight="0.6"
             android:text="@string/temp_text"
             android:textAppearance="?android:attr/textAppearanceMedium"
             tools:text="@string/temp_text" />
@@ -137,20 +140,23 @@
             android:id="@+id/rg_temperath"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.6"
+            android:layout_weight="0.4"
             android:orientation="horizontal">
 
             <RadioButton
                 android:id="@+id/radioButton_tF"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="C" />
+                android:layout_marginRight="@dimen/appbar_padding_top"
+                android:layout_marginEnd="@dimen/appbar_padding_top"
+                android:text="C°" />
 
             <RadioButton
                 android:id="@+id/radioButton_tC"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="F" />
+
+                android:text="F°" />
 
         </RadioGroup>
 

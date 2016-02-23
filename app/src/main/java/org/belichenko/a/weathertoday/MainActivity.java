@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements MyConstants{
         LinkedHashMap<String, String> filter = new LinkedHashMap<>();
         filter.put("q",sharedPref.getString(STORED_CITY, "Kharkiv"));
         filter.put("format","json");
-        filter.put("num_of_days",String.valueOf(sharedPref.getInt(STORED_DAYS, 5)));
+        filter.put("num_of_days",String.valueOf(sharedPref.getInt(STORED_DAYS, 4)+ ONE_DAY));
         filter.put("lang",sharedPref.getString(STORED_LANG, "ru"));
         filter.put("key",API_KEY);
 

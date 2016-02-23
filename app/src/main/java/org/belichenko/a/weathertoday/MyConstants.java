@@ -9,6 +9,9 @@ public interface MyConstants {
     String STORED_CITY = "org.belichenko.a.weathertoday.storedCity";
     String STORED_DAYS = "org.belichenko.a.weathertoday.storedDays";
     String STORED_LANG = "org.belichenko.a.weathertoday.storedLang";
+    String STORED_TEMP = "org.belichenko.a.weathertoday.storedTemp";
     String STORED_LATITUDE = "org.belichenko.a.weathertoday.storedLatitude";
     String STORED_LONGITUDE = "org.belichenko.a.weathertoday.storedLongitude";
+    int ONE_DAY = 1;
+
 }

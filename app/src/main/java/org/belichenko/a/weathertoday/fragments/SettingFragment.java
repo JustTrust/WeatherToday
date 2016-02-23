@@ -39,6 +39,8 @@ public class SettingFragment extends Fragment implements MyConstants {
     SeekBar daysDisplay;
     @Bind(R.id.rg_language)
     RadioGroup rgLanguage;
+    @Bind(R.id.rg_temperath)
+    RadioGroup rgTemperath;
     @Bind(R.id.image_number)
     ImageView imageNumber;
 
@@ -66,6 +68,27 @@ public class SettingFragment extends Fragment implements MyConstants {
         rootView = inflater.inflate(R.layout.fragment_setting, container, false);
         ButterKnife.bind(this, rootView);
         //sets listeners
+        setListeners();
+        adapter = new AutoCompleteAdapter(App.getAppContext()
+                , R.layout.simple_dropdown_item_2line
+                , new ArrayList<SearchResult>());
+        cityName.setAdapter(adapter);
+        cityName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SearchResult result = (SearchResult) parent.getItemAtPosition(position);
+                if (result != null) {
+                    cityName.setText(result.getCity());
+                    writeCityToPreference(result);
+                }
+            }
+        });
+        readSettingsFromPreferences();
+        return rootView;
+    }
+
+    private void setListeners() {
+
         rgLanguage.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -79,12 +102,28 @@ public class SettingFragment extends Fragment implements MyConstants {
                 }
             }
         });
+
+        rgTemperath.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                SharedPreferences mPrefs = App.getAppContext()
+                        .getSharedPreferences(STORAGE_OF_SETTINGS, Context.MODE_PRIVATE);
+                SharedPreferences.Editor edit = mPrefs.edit();
+                RadioButton rb = (RadioButton) rgTemperath.findViewById(checkedId);
+                if (rb != null) {
+                    edit.putString(STORED_TEMP, rb.getText().toString());
+                    edit.apply();
+                }
+            }
+        });
+
         daysDisplay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Resources resources = App.getAppContext().getResources();
-                final int resourceId = resources.getIdentifier("numeric_" + String.valueOf(progress), "drawable",
-                        App.getAppContext().getPackageName());
+                final int resourceId = resources.getIdentifier("numeric_" + String.valueOf(progress + ONE_DAY)
+                        , "drawable"
+                        , App.getAppContext().getPackageName());
 
                 imageNumber.setImageDrawable(resources.getDrawable(resourceId));
             }
@@ -102,6 +141,7 @@ public class SettingFragment extends Fragment implements MyConstants {
                 edit.apply();
             }
         });
+
         cityName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -120,24 +160,10 @@ public class SettingFragment extends Fragment implements MyConstants {
                 edit.apply();
             }
         });
-        adapter = new AutoCompleteAdapter(App.getAppContext()
-                , R.layout.simple_dropdown_item_2line
-                , new ArrayList<SearchResult>());
-        cityName.setAdapter(adapter);
-        cityName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SearchResult result = (SearchResult) parent.getItemAtPosition(position);
-                cityName.setText(result.getCity());
-                writeCityToPreference(result);
-            }
-        });
-        readSettingsFromPreferences();
-        return rootView;
     }
 
     private void writeCityToPreference(SearchResult result) {
-        if (result == null){
+        if (result == null) {
             return;
         }
         SharedPreferences mPrefs = App.getAppContext()
@@ -153,17 +179,27 @@ public class SettingFragment extends Fragment implements MyConstants {
         SharedPreferences mPrefs = App.getAppContext()
                 .getSharedPreferences(STORAGE_OF_SETTINGS, Context.MODE_PRIVATE);
         cityName.setText(mPrefs.getString(STORED_CITY, "Kharkiv"));
-        daysDisplay.setProgress(mPrefs.getInt(STORED_DAYS, 5));
+        daysDisplay.setProgress(mPrefs.getInt(STORED_DAYS, 4)+ ONE_DAY);
 
-        String name = mPrefs.getString(STORED_LANG, "radioButton_ru");
-        RadioButton rb;
-        if (name.equals("ru")) {
-            rb = (RadioButton) rgLanguage.getChildAt(0);
+        String nameLang = mPrefs.getString(STORED_LANG, "radioButton_ru");
+        RadioButton rbLang;
+        if (nameLang.equals("ru")) {
+            rbLang = (RadioButton) rgLanguage.getChildAt(0);
         } else {
-            rb = (RadioButton) rgLanguage.getChildAt(1);
+            rbLang = (RadioButton) rgLanguage.getChildAt(1);
         }
-        if (rb != null) {
-            rb.setChecked(true);
+        if (rbLang != null) {
+            rbLang.setChecked(true);
+        }
+        String nameTemp = mPrefs.getString(STORED_TEMP, "C°");
+        RadioButton rbTemp;
+        if (nameTemp.equals("C°")) {
+            rbTemp = (RadioButton) rgTemperath.getChildAt(0);
+        } else {
+            rbTemp = (RadioButton) rgTemperath.getChildAt(1);
+        }
+        if (rbTemp != null) {
+            rbTemp.setChecked(true);
         }
     }
 

@@ -14,7 +14,9 @@ public class App extends Application {
 
     public void onCreate() {
         super.onCreate();
+        // TODO: 23.02.2016 comment when developing is over
         Stetho.initializeWithDefaults(this);
+
         App.context = getApplicationContext();
     }
 

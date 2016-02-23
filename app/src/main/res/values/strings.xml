@@ -8,4 +8,6 @@
     <string name="days_of_week_text">Days</string>
     <string name="lang_text">Language</string>
     <string name="temp_text">Temperature in</string>
+    <string name="fahrenheit">fahrenheit</string>
+    <string name="celsius">celsius</string>
 </resources>
