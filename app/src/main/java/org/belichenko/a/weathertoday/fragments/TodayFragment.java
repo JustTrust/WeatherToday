@@ -1,5 +1,7 @@
 package org.belichenko.a.weathertoday.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -8,18 +10,24 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
+import org.belichenko.a.weathertoday.App;
 import org.belichenko.a.weathertoday.MainActivity;
+import org.belichenko.a.weathertoday.MyConstants;
 import org.belichenko.a.weathertoday.R;
 import org.belichenko.a.weathertoday.data_structure.Astronomy;
 import org.belichenko.a.weathertoday.data_structure.Hourly;
 import org.belichenko.a.weathertoday.data_structure.Weather;
+import org.belichenko.a.weathertoday.data_structure.WeatherDesc;
+import org.belichenko.a.weathertoday.data_structure.WeatherIconUrl;
 
 import java.util.ArrayList;
 
 /**
  *
  */
-public class TodayFragment extends Fragment {
+public class TodayFragment extends Fragment implements MyConstants{
 
     ArrayList<Weather> wr;
 
@@ -77,10 +85,21 @@ public class TodayFragment extends Fragment {
     }
 
     void updateFragment() {
+
         MainActivity md = (MainActivity) getActivity();
-
+        if (md == null) {
+            return;
+        }
+        if (md.mainData == null) {
+            return;
+        }
+        if (md.mainData.data == null) {
+            return;
+        }
         wr = md.mainData.data.weather;
-
+        if (wr == null) {
+            return;
+        }
         Weather currentWeather = wr.get(0);
         if (currentWeather == null) {
             return;
@@ -93,10 +112,17 @@ public class TodayFragment extends Fragment {
         if (currentWeatherHr == null) {
             return;
         }
+        ArrayList<WeatherDesc> lstDesc = currentWeatherHr.weatherDesc;
+        if (lstDesc != null) {
+            WeatherDesc wdd = lstDesc.get(0);
+            overall.setText(wdd.value);
+        }
+        ArrayList<WeatherIconUrl> lstDescImage = currentWeatherHr.weatherIconUrl;
+        if (lstDescImage != null) {
+            WeatherIconUrl wiu = lstDescImage.get(0);
+            Picasso.with(App.getAppContext()).load(wiu.value).into(image);
+        }
 
-        overall.setText(currentWeatherHr.weatherDesc.toString());
-        air_temp.setText(currentWeatherHr.tempC);
-        feels_like_C.setText(currentWeatherHr.FeelsLikeC);
         atmo_pressure.setText(currentWeatherHr.pressure);
         wind_speed.setText(currentWeatherHr.windspeedKmph);
 
@@ -108,5 +134,18 @@ public class TodayFragment extends Fragment {
         }
         sun_rise.setText(astro.sunrise);
         moon_rise.setText(astro.moonrise);
+        SharedPreferences mPrefs = App.getAppContext()
+                .getSharedPreferences(STORAGE_OF_SETTINGS, Context.MODE_PRIVATE);
+
+        String nameTemp = mPrefs.getString(STORED_TEMP, "C°");
+
+        if (nameTemp.equals("C°")) {
+            air_temp.setText(currentWeatherHr.tempC + " C");
+            feels_like_C.setText(currentWeatherHr.FeelsLikeC+ " C");
+        } else {
+            air_temp.setText(currentWeatherHr.tempF + " F");
+            feels_like_C.setText(currentWeatherHr.FeelsLikeF + " F");
+        }
     }
+
 }

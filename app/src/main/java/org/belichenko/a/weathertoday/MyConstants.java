@@ -15,4 +15,5 @@ public interface MyConstants {
     String STORED_MAIN_STRUCTURE = "org.belichenko.a.weathertoday.storedMainData";
     String STORED_UPDATE_DATA = "org.belichenko.a.weathertoday.storedUpdateData";
     int ONE_DAY = 1;
+    int NOTIFY_ID = 1;
 }

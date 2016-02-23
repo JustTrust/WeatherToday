@@ -1,22 +1,28 @@
 package org.belichenko.a.weathertoday.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import org.belichenko.a.weathertoday.App;
 import org.belichenko.a.weathertoday.MainActivity;
+import org.belichenko.a.weathertoday.MyConstants;
 import org.belichenko.a.weathertoday.R;
 import org.belichenko.a.weathertoday.data_structure.Hourly;
 import org.belichenko.a.weathertoday.data_structure.Weather;
 import org.belichenko.a.weathertoday.data_structure.WeatherDesc;
+import org.belichenko.a.weathertoday.data_structure.WeatherIconUrl;
 
 import java.util.ArrayList;
 
@@ -41,14 +47,23 @@ public class WeekFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_week, container, false);
         md = (MainActivity) getActivity();
-        wr = md.mainData.data.weather;
+        if (md != null && md.mainData != null && md.mainData.data != null) {
+            wr = md.mainData.data.weather;
+        }
+
         ListView list = (ListView) rootView.findViewById(R.id.listView);
         list.setAdapter(new MyAdapter(App.getAppContext(), wr));
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+        });
         return rootView;
     }
 
 
-    class MyAdapter extends ArrayAdapter<Weather> {
+    class MyAdapter extends ArrayAdapter<Weather> implements MyConstants{
 
         public MyAdapter(Context context, ArrayList<Weather> object) {
             super(context, R.layout.list_item, object);
@@ -74,13 +89,25 @@ public class WeekFragment extends Fragment {
                 holder = (ViewHolder) rowView.getTag();
             }
             ArrayList<Hourly> hourly = getItem(position).hourly;
-
+            SharedPreferences mPrefs = App.getAppContext().getSharedPreferences(STORAGE_OF_SETTINGS, Context.MODE_PRIVATE);
             if (hourly != null) {
 
                 Hourly carrenthourly = hourly.get(0);
                 ArrayList<WeatherDesc> weatherDesc = carrenthourly.weatherDesc;
-                holder.textTemperat.setText(carrenthourly.tempC);
-                holder.textTemperatSence.setText(carrenthourly.FeelsLikeC);
+                ArrayList<WeatherIconUrl> lstDescImage = carrenthourly.weatherIconUrl;
+                if (lstDescImage != null) {
+                    WeatherIconUrl wiu = lstDescImage.get(0);
+                    Picasso.with(App.getAppContext()).load(wiu.value).into(holder.imageItem);
+                }
+                String nameTemp = mPrefs.getString(STORED_TEMP, "C°");
+                if (nameTemp.equals("C°")) {
+                    holder.textTemperat.setText(carrenthourly.tempC+" C");
+                    holder.textTemperatSence.setText(carrenthourly.FeelsLikeC+" C");
+                } else {
+                    holder.textTemperat.setText(carrenthourly.tempF+" F");
+                    holder.textTemperatSence.setText(carrenthourly.FeelsLikeF+" F");
+                }
+
                 holder.textAtmospherePressure.setText(carrenthourly.pressure);
                 holder.Data.setText(getItem(position).date);
                 if (weatherDesc != null) {

@@ -1,6 +1,10 @@
 package org.belichenko.a.weathertoday;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -19,18 +23,22 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 
 import org.belichenko.a.weathertoday.data_structure.ErrorData;
+import org.belichenko.a.weathertoday.data_structure.Hourly;
 import org.belichenko.a.weathertoday.data_structure.MainData;
+import org.belichenko.a.weathertoday.data_structure.Weather;
+import org.belichenko.a.weathertoday.data_structure.WeatherDesc;
 import org.belichenko.a.weathertoday.fragments.SettingFragment;
 import org.belichenko.a.weathertoday.fragments.TodayFragment;
 import org.belichenko.a.weathertoday.fragments.WeekFragment;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class MainActivity extends AppCompatActivity implements MyConstants{
+public class MainActivity extends AppCompatActivity implements MyConstants {
 
     private static final String TAG = "MainActivity";
     /**
@@ -112,11 +120,11 @@ public class MainActivity extends AppCompatActivity implements MyConstants{
 
         SharedPreferences sharedPref = getSharedPreferences(STORAGE_OF_SETTINGS, Context.MODE_PRIVATE);
         LinkedHashMap<String, String> filter = new LinkedHashMap<>();
-        filter.put("q",sharedPref.getString(STORED_CITY, "Kharkiv"));
-        filter.put("format","json");
-        filter.put("num_of_days",String.valueOf(sharedPref.getInt(STORED_DAYS, 4)+ ONE_DAY));
-        filter.put("lang",sharedPref.getString(STORED_LANG, "ru"));
-        filter.put("key",API_KEY);
+        filter.put("q", sharedPref.getString(STORED_CITY, "Kharkiv"));
+        filter.put("format", "json");
+        filter.put("num_of_days", String.valueOf(sharedPref.getInt(STORED_DAYS, 4) + ONE_DAY));
+        filter.put("lang", sharedPref.getString(STORED_LANG, "ru"));
+        filter.put("key", API_KEY);
 
         Retrofit.getWeatherData(filter, new Callback<MainData>() {
             @Override
@@ -124,7 +132,8 @@ public class MainActivity extends AppCompatActivity implements MyConstants{
                 if (cd != null) {
                     if (cd.data.error == null) {
                         mainData = cd;
-                    }else if(cd.data.error.size()>0){
+                        onNotification();
+                    } else if (cd.data.error.size() > 0) {
                         for (ErrorData errorData : cd.data.error) {
                             Toast.makeText(MainActivity.this, errorData.msg, Toast.LENGTH_LONG).show();
                         }
@@ -141,15 +150,62 @@ public class MainActivity extends AppCompatActivity implements MyConstants{
         });
     }
 
+    public void onNotification() {
+        ArrayList<Weather> wr = mainData.data.weather;
+
+        Weather currentWeather = wr.get(0);
+        if (currentWeather == null) {
+            return;
+        }
+
+        ArrayList<Hourly> hr = currentWeather.hourly;
+        Hourly currentWeatherHr = hr.get(0);
+        if (currentWeatherHr == null) {
+            return;
+        }
+        ArrayList<WeatherDesc> lstDesc = currentWeatherHr.weatherDesc;
+        SharedPreferences mPrefs = App.getAppContext()
+                .getSharedPreferences(STORAGE_OF_SETTINGS, Context.MODE_PRIVATE);
+
+        String nameTemp = mPrefs.getString(STORED_TEMP, "C°");
+        String currentTemp = "";
+        if (nameTemp.equals("C°")) {
+            currentTemp = currentWeatherHr.tempC + " C";
+        } else {
+            currentTemp = currentWeatherHr.tempF + " F";
+        }
+
+        if (lstDesc != null) {
+            WeatherDesc wdd = lstDesc.get(0);
+
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+            PendingIntent contentIntent = PendingIntent.getActivity(this,
+                    NOTIFY_ID, notificationIntent,
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            Notification.Builder builder = new Notification.Builder(this);
+            builder.setContentIntent(contentIntent)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setAutoCancel(true)
+                    .setContentTitle(currentTemp)
+                    .setContentText(wdd.value);
+
+            Notification n = builder.build();
+            nm.notify(NOTIFY_ID, n);
+        }
+    }
+
     private void setupTabIcons(TabLayout tabLayout) {
         try {
             tabLayout.getTabAt(0).setIcon(tabIcons[0]);
             tabLayout.getTabAt(1).setIcon(tabIcons[1]);
             tabLayout.getTabAt(2).setIcon(tabIcons[2]);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             Log.d(TAG, "setupTabIcons() returned: " + e);
         }
     }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -162,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements MyConstants{
 
         @Override
         public Fragment getItem(int position) {
-            switch (position){
+            switch (position) {
                 case 0:
                     return TodayFragment.getInstance();
                 case 1:

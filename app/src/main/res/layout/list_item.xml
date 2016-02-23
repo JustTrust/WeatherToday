@@ -53,7 +53,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/linearLayout"
-        android:background="#eeeeee"
+
         android:orientation="horizontal"
         android:stretchColumns="*">
 
@@ -64,7 +64,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/fragment_week_pading"
-                tools:text="Название" />
+                android:text="Температура" />
 
             <TextView
                 android:id="@+id/text_temperatW"
@@ -82,7 +82,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/fragment_week_pading"
-                tools:text="Название" />
+                android:text="Ощущение температуры" />
 
             <TextView
                 android:id="@+id/text_temperat_senceW"
@@ -100,7 +100,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/fragment_week_pading"
-                tools:text="Название" />
+                android:text="Атмосферное давление" />
 
             <TextView
                 android:id="@+id/text_atmosphere_pressureW"
