@@ -24,8 +24,8 @@ public class Hourly {
     public String HeatIndexC;
     public String HeatIndexF;
     public String humidity;
-    ArrayList<WeatherDesc> weatherDesc;
-    ArrayList<WeatherIconUrl> weatherIconUrl;
+    public ArrayList<WeatherDesc> weatherDesc;
+    public ArrayList<WeatherIconUrl> weatherIconUrl;
     public String precipMM;
     public String pressure;
     public String tempC;

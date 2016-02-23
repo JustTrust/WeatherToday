@@ -41,8 +41,13 @@ public class MainActivity extends AppCompatActivity implements MyConstants{
 
     // The {@link ViewPager} that will host the section contents.
     private ViewPager mViewPager;
+
+    public MainData getMainData() {
+        return mainData;
+    }
+
     // Keeps all information about weather
-    MainData mainData;
+    public MainData mainData;
     // Icons for tabs
     private int[] tabIcons = {
             R.drawable.ic_event_white_24dp,
@@ -87,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements MyConstants{
         if (mainData != null) {
             Gson gson = new Gson();
             String md = gson.toJson(mainData);
-            edit.putString(STORED_MAIN_DATA, md);
+            edit.putString(STORED_MAIN_STRUCTURE, md);
             edit.apply();
         }
     }
@@ -96,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements MyConstants{
     protected void onResume() {
         super.onResume();
         SharedPreferences sharedPref = getSharedPreferences(STORAGE_OF_SETTINGS, Context.MODE_PRIVATE);
-        String md = sharedPref.getString(STORED_MAIN_DATA, null);
+        String md = sharedPref.getString(STORED_MAIN_STRUCTURE, null);
         if (md != null) {
             Gson gson = new Gson();
             mainData = gson.fromJson(md.toString(), MainData.class);
