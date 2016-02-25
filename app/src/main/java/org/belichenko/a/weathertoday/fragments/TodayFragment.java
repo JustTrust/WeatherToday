@@ -24,40 +24,38 @@ import org.belichenko.a.weathertoday.data_structure.WeatherIconUrl;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  *
  */
 public class TodayFragment extends Fragment implements MyConstants{
 
-    ArrayList<Weather> wr;
-
-    TextView date;
-    TextView overall;
-    TextView air_temp;
-    TextView feels_like_C;
-    TextView atmo_pressure;
-    TextView sun_rise;
-    TextView sun_set;
-    TextView moon_rise;
-    TextView moon_set;
-    TextView wind_speed;
-    TextView chanceoffog;
-    TextView chanceoffrost;
-    TextView chanceofhightemp;
-    TextView chanceofovercast;
-    TextView chanceofrain;
-    TextView chanceofremdry;
-    TextView chanceofsnow;
-    TextView chanceofsunshine;
-    TextView chanceofthunder;
-    TextView chanceofwindy;
+    @Bind(R.id.imageView_today)
     ImageView image;
+    @Bind(R.id.date_today_id)
+    TextView date;
+    @Bind(R.id.overall_today_id)
+    TextView overall;
+    @Bind(R.id.air_temperature_today_id)
+    TextView air_temp;
+    @Bind(R.id.feels_like_id)
+    TextView feels_like;
+    @Bind(R.id.atmo_press_id)
+    TextView atmo_pressure;
+    @Bind(R.id.susns_id)
+    TextView sun_rise;
+    @Bind(R.id.moons_id)
+    TextView moon_rise;
+    @Bind(R.id.wind_speed_id)
+    TextView wind_speed;
 
+    private ArrayList<Weather> wr;
     private static TodayFragment fragment = new TodayFragment();
 
     public TodayFragment() {
     }
-
 
     public static TodayFragment getInstance() {
         return fragment;
@@ -67,35 +65,24 @@ public class TodayFragment extends Fragment implements MyConstants{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_today, container, false);
-
-        date = (TextView) rootView.findViewById(R.id.date_today_id);
-        overall = (TextView) rootView.findViewById(R.id.overall_today_id);
-        air_temp = (TextView) rootView.findViewById(R.id.air_temperature_today_id);
-        feels_like_C = (TextView) rootView.findViewById(R.id.feels_like_id);
-        atmo_pressure = (TextView) rootView.findViewById(R.id.atmo_press_id);
-        sun_rise = (TextView) rootView.findViewById(R.id.susns_id);
-//        sun_set = (TextView)rootView.findViewById(R.id.susns_id);
-        moon_rise = (TextView) rootView.findViewById(R.id.moons_id);
-//        moon_set = (TextView)rootView.findViewById(R.id.moons_id);
-        wind_speed = (TextView) rootView.findViewById(R.id.wind_speed_id);
-        image = (ImageView) rootView.findViewById(R.id.imageView_today);
-
+        ButterKnife.bind(this, rootView);
         updateFragment();
         return rootView;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ButterKnife.unbind(this);
     }
 
     void updateFragment() {
 
         MainActivity md = (MainActivity) getActivity();
-        if (md == null) {
+        if (md == null || md.mainData == null || md.mainData.data == null) {
             return;
         }
-        if (md.mainData == null) {
-            return;
-        }
-        if (md.mainData.data == null) {
-            return;
-        }
+
         wr = md.mainData.data.weather;
         if (wr == null) {
             return;
@@ -127,24 +114,22 @@ public class TodayFragment extends Fragment implements MyConstants{
         wind_speed.setText(currentWeatherHr.windspeedKmph);
 
         ArrayList<Astronomy> as = currentWeather.astronomy;
-
         Astronomy astro = as.get(0);
-        if (astro == null) {
-            return;
+        if (astro != null) {
+            sun_rise.setText(astro.sunrise);
+            moon_rise.setText(astro.moonrise);
         }
-        sun_rise.setText(astro.sunrise);
-        moon_rise.setText(astro.moonrise);
+
         SharedPreferences mPrefs = App.getAppContext()
                 .getSharedPreferences(STORAGE_OF_SETTINGS, Context.MODE_PRIVATE);
-
         String nameTemp = mPrefs.getString(STORED_TEMP, "C°");
 
         if (nameTemp.equals("C°")) {
-            air_temp.setText(currentWeatherHr.tempC + " C");
-            feels_like_C.setText(currentWeatherHr.FeelsLikeC+ " C");
+            air_temp.setText(currentWeatherHr.tempC + " " + nameTemp);
+            feels_like.setText(currentWeatherHr.FeelsLikeC + " " + nameTemp);
         } else {
-            air_temp.setText(currentWeatherHr.tempF + " F");
-            feels_like_C.setText(currentWeatherHr.FeelsLikeF + " F");
+            air_temp.setText(currentWeatherHr.tempF + " " + nameTemp);
+            feels_like.setText(currentWeatherHr.FeelsLikeF + " " + nameTemp);
         }
     }
 

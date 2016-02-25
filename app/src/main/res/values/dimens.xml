@@ -5,5 +5,5 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
     <dimen name="list_margin">4dp</dimen>
-    <dimen name="fragment_week_pading">10dp</dimen>
+    <dimen name="fragment_week_pading">6dp</dimen>
 </resources>

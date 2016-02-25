@@ -33,9 +33,18 @@ public class WeekFragment extends Fragment {
 
     private static WeekFragment fragment = new WeekFragment();
     public MainActivity md;
+    MyAdapter myAdapter;
     public static ArrayList<Weather> wr;
 
     public WeekFragment() {
+    }
+
+    public void updateList() {
+        md = (MainActivity) getActivity();
+        if (md != null && md.mainData != null && md.mainData.data != null) {
+            wr = md.mainData.data.weather;
+        }
+        myAdapter.notifyDataSetChanged();
     }
 
     public static WeekFragment getInstance() {
@@ -52,7 +61,8 @@ public class WeekFragment extends Fragment {
         }
 
         ListView list = (ListView) rootView.findViewById(R.id.listView);
-        list.setAdapter(new MyAdapter(App.getAppContext(), wr));
+        myAdapter = new MyAdapter(App.getAppContext(), wr);
+        list.setAdapter(myAdapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -61,7 +71,6 @@ public class WeekFragment extends Fragment {
         });
         return rootView;
     }
-
 
     class MyAdapter extends ArrayAdapter<Weather> implements MyConstants{
 

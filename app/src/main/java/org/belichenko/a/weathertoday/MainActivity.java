@@ -6,6 +6,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,18 +23,21 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
 
+import org.belichenko.a.weathertoday.data_structure.CurrentCondition;
 import org.belichenko.a.weathertoday.data_structure.ErrorData;
-import org.belichenko.a.weathertoday.data_structure.Hourly;
 import org.belichenko.a.weathertoday.data_structure.MainData;
-import org.belichenko.a.weathertoday.data_structure.Weather;
 import org.belichenko.a.weathertoday.data_structure.WeatherDesc;
+import org.belichenko.a.weathertoday.data_structure.WeatherIconUrl;
 import org.belichenko.a.weathertoday.fragments.SettingFragment;
 import org.belichenko.a.weathertoday.fragments.TodayFragment;
 import org.belichenko.a.weathertoday.fragments.WeekFragment;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.concurrent.ExecutionException;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -49,10 +54,6 @@ public class MainActivity extends AppCompatActivity implements MyConstants {
 
     // The {@link ViewPager} that will host the section contents.
     private ViewPager mViewPager;
-
-    public MainData getMainData() {
-        return mainData;
-    }
 
     // Keeps all information about weather
     public MainData mainData;
@@ -120,9 +121,15 @@ public class MainActivity extends AppCompatActivity implements MyConstants {
 
         SharedPreferences sharedPref = getSharedPreferences(STORAGE_OF_SETTINGS, Context.MODE_PRIVATE);
         LinkedHashMap<String, String> filter = new LinkedHashMap<>();
-        filter.put("q", sharedPref.getString(STORED_CITY, "Kharkiv"));
+        StringBuilder city = new StringBuilder(sharedPref.getString(STORED_CITY, "Kharkiv"));
+        String country = sharedPref.getString(STORED_COUNTRY, "");
+        if (!country.isEmpty()) {
+            city.append(", ");
+            city.append(country);
+        }
+        filter.put("q", city.toString());
         filter.put("format", "json");
-        filter.put("num_of_days", String.valueOf(sharedPref.getInt(STORED_DAYS, 4) + ONE_DAY));
+        filter.put("num_of_days", String.valueOf(sharedPref.getInt(STORED_DAYS, 4)));
         filter.put("lang", sharedPref.getString(STORED_LANG, "ru"));
         filter.put("key", API_KEY);
 
@@ -132,7 +139,9 @@ public class MainActivity extends AppCompatActivity implements MyConstants {
                 if (cd != null) {
                     if (cd.data.error == null) {
                         mainData = cd;
-                        onNotification();
+                        makeNotification();
+                        WeekFragment weekFragment = WeekFragment.getInstance();
+                        weekFragment.updateList();
                     } else if (cd.data.error.size() > 0) {
                         for (ErrorData errorData : cd.data.error) {
                             Toast.makeText(MainActivity.this, errorData.msg, Toast.LENGTH_LONG).show();
@@ -150,50 +159,102 @@ public class MainActivity extends AppCompatActivity implements MyConstants {
         });
     }
 
-    public void onNotification() {
-        ArrayList<Weather> wr = mainData.data.weather;
+    public void makeNotification() {
 
-        Weather currentWeather = wr.get(0);
-        if (currentWeather == null) {
-            return;
-        }
-
-        ArrayList<Hourly> hr = currentWeather.hourly;
-        Hourly currentWeatherHr = hr.get(0);
-        if (currentWeatherHr == null) {
-            return;
-        }
-        ArrayList<WeatherDesc> lstDesc = currentWeatherHr.weatherDesc;
         SharedPreferences mPrefs = App.getAppContext()
                 .getSharedPreferences(STORAGE_OF_SETTINGS, Context.MODE_PRIVATE);
+        if (!mPrefs.getBoolean(STORED_SHOW_NOTIF, true)) {
+            return; // don't show if user switch off notification
+        }
+        if (mainData == null || mainData.data == null) {
+            return;
+        }
+        ArrayList<CurrentCondition> cc = mainData.data.current_condition;
+        if (cc == null || cc.size() < 1) {
+            return;
+        }
+        CurrentCondition currentCondition = cc.get(0);
+        if (currentCondition == null) {
+            return;
+        }
+        // get current icon
+        ArrayList<WeatherIconUrl> wIcon = currentCondition.weatherIconUrl;
+        if (wIcon == null || wIcon.size() < 1) {
+            return;
+        }
+        WeatherIconUrl currentIcon = wIcon.get(0);
+        if (currentIcon == null || currentIcon.value.isEmpty()) {
+            return;
+        }
 
+        Bitmap iconPic = null;
+
+        try {
+            iconPic = new AsyncTask<String, Void, Bitmap>() {
+                @Override
+                protected Bitmap doInBackground(String... params) {
+                    try {
+                        return Picasso.with(App.getAppContext())
+                                .load(params[0])
+                                .placeholder(R.mipmap.ic_launcher)
+                                .error(R.mipmap.ic_launcher)
+                                .get();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            }.execute(currentIcon.value).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        // get current temp
         String nameTemp = mPrefs.getString(STORED_TEMP, "C°");
-        String currentTemp = "";
+        String city = mPrefs.getString(STORED_CITY, "");
+        String firstLine;
+        String secondLine;
         if (nameTemp.equals("C°")) {
-            currentTemp = currentWeatherHr.tempC + " C";
+            firstLine = city + " " + currentCondition.temp_C + " " + nameTemp;
         } else {
-            currentTemp = currentWeatherHr.tempF + " F";
+            firstLine = city + " " + currentCondition.temp_F + " " + nameTemp;
         }
-
-        if (lstDesc != null) {
-            WeatherDesc wdd = lstDesc.get(0);
-
-            Intent notificationIntent = new Intent(this, MainActivity.class);
-            PendingIntent contentIntent = PendingIntent.getActivity(this,
-                    NOTIFY_ID, notificationIntent,
-                    PendingIntent.FLAG_CANCEL_CURRENT);
-            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-            Notification.Builder builder = new Notification.Builder(this);
-            builder.setContentIntent(contentIntent)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setAutoCancel(true)
-                    .setContentTitle(currentTemp)
-                    .setContentText(wdd.value);
-
-            Notification n = builder.build();
-            nm.notify(NOTIFY_ID, n);
+        // get current weather desc
+        ArrayList<WeatherDesc> wDesc = currentCondition.weatherDesc;
+        if (wDesc == null || wDesc.size() < 1) {
+            return;
         }
+        WeatherDesc currentDesc = wDesc.get(0);
+        if (currentDesc == null || currentDesc.value.isEmpty()) {
+            return;
+        }
+        secondLine = new StringBuffer().append(currentDesc.value)
+                .append(", ")
+                .append(getString(R.string.wind_for_notif))
+                .append(currentCondition.windspeedMiles)
+                .append(R.string.wind_description)
+                .toString();
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this,
+                NOTIFY_ID, notificationIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Notification.Builder builder = new Notification.Builder(this);
+        builder.setContentIntent(contentIntent)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(iconPic)
+                .setAutoCancel(true)
+                .setContentTitle(firstLine)
+                .setContentText(secondLine)
+                .setVibrate(new long[]{200, 400, 200});
+
+        Notification n = builder.build();
+        nm.notify(NOTIFY_ID, n);
+
     }
 
     private void setupTabIcons(TabLayout tabLayout) {

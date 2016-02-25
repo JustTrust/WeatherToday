@@ -1,38 +1,28 @@
 package org.belichenko.a.weathertoday.search_structure;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.TextView;
 
 import org.belichenko.a.weathertoday.MyConstants;
 import org.belichenko.a.weathertoday.R;
-import org.belichenko.a.weathertoday.Retrofit;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import java.util.ArrayList;
 
 /**
  *
  */
 public class AutoCompleteAdapter<T extends SearchResult> extends ArrayAdapter
-        implements Filterable, MyConstants {
+        implements MyConstants {
 
-    private static final String MAX_RESULTS = "5";
     public static final String TAG = "updateCityFromSite()";
     private final Context mContext;
-    private List<T> mResults;
+    private ArrayList<SearchResult> mResults;
 
-    public AutoCompleteAdapter(Context context, int resource, List<T> objects) {
+    public AutoCompleteAdapter(Context context, int resource, ArrayList<SearchResult> objects) {
         super(context, resource, objects);
         mContext = context;
         mResults = objects;
@@ -44,7 +34,7 @@ public class AutoCompleteAdapter<T extends SearchResult> extends ArrayAdapter
     }
 
     @Override
-    public T getItem(int index) {
+    public SearchResult getItem(int index) {
         return mResults.get(index);
     }
 
@@ -65,70 +55,4 @@ public class AutoCompleteAdapter<T extends SearchResult> extends ArrayAdapter
 
         return convertView;
     }
-
-    @Override
-    public Filter getFilter() {
-        Filter filter = new Filter() {
-
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults filterResults = new FilterResults();
-                if (constraint != null) {
-                    updateDataFromSite(constraint.toString());
-                }
-                return filterResults;
-            }
-
-            @Override
-            protected void publishResults(CharSequence constraint, Filter.FilterResults results) {
-            }
-        };
-
-        return filter;
-    }
-
-    /**
-     * Returns a search result for the given book title.
-     */
-    private void updateDataFromSite(String city) {
-
-        LinkedHashMap<String, String> filter = new LinkedHashMap<>();
-        filter.put("q", city);
-        filter.put("format", "json");
-        filter.put("num_of_results", MAX_RESULTS);
-        filter.put("key", API_KEY);
-
-        Retrofit.getListOfCity(filter, new Callback<MainSearch>() {
-
-            @Override
-            public void success(MainSearch ms, Response response) {
-                mResults.clear();
-                if (ms == null) {
-                    notifyDataSetInvalidated();
-                    return;
-                }
-                if (ms.search_api == null) {
-                    notifyDataSetInvalidated();
-                    return;
-                }
-                if (ms.search_api.result == null) {
-                    notifyDataSetInvalidated();
-                    return;
-                }
-                mResults.clear();
-                mResults.addAll((List<T>) ms.search_api.result);
-                if (mResults.size() > 0) {
-                    notifyDataSetChanged();
-                } else {
-                    notifyDataSetInvalidated();
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                Log.d(TAG, "failure() called with: " + "error = [" + error + "]");
-            }
-        });
-    }
-
 }

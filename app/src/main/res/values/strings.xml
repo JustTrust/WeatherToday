@@ -10,4 +10,7 @@
     <string name="temp_text">Temperature in</string>
     <string name="fahrenheit">fahrenheit</string>
     <string name="celsius">celsius</string>
+    <string name="notification_text">Show notification</string>
+    <string name="wind_for_notif">wind</string>
+    <string name="wind_description">m/s</string>
 </resources>

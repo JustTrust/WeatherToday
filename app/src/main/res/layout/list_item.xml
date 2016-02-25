@@ -1,11 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_vertical_margin"
-    android:paddingRight="@dimen/activity_vertical_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -22,8 +18,8 @@
                 android:id="@+id/iconW"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="20dp"
-                android:src="@mipmap/ic_launcher" />
+                android:padding="@dimen/fragment_week_pading"
+                tools:src="@mipmap/ic_launcher" />
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -31,19 +27,18 @@
                 android:layout_gravity="center"
                 android:orientation="vertical">
 
-
                 <TextView
                     android:id="@+id/text_dataW"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    tools:text="Дата" />
+                    android:padding="@dimen/fragment_week_pading"
+                    tools:text="2016-02-02" />
 
                 <TextView
                     android:id="@+id/text_informationW"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
+                    android:padding="@dimen/fragment_week_pading"
                     tools:text="Общие описание" />
             </LinearLayout>
         </LinearLayout>
@@ -53,7 +48,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/linearLayout"
-
         android:orientation="horizontal"
         android:stretchColumns="*">
 
@@ -71,7 +65,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/fragment_week_pading"
-                tools:text="Температура" />
+                tools:text="30 C" />
 
         </TableRow>
 
