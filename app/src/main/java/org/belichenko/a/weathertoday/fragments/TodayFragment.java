@@ -30,7 +30,7 @@ import butterknife.ButterKnife;
 /**
  *
  */
-public class TodayFragment extends Fragment implements MyConstants{
+public class TodayFragment extends Fragment implements MyConstants {
 
     @Bind(R.id.imageView_today)
     ImageView image;
@@ -50,6 +50,8 @@ public class TodayFragment extends Fragment implements MyConstants{
     TextView moon_rise;
     @Bind(R.id.wind_speed_id)
     TextView wind_speed;
+    @Bind(R.id.text_humidity)
+    TextView humidity;
 
     private ArrayList<Weather> wr;
     private static TodayFragment fragment = new TodayFragment();
@@ -66,7 +68,7 @@ public class TodayFragment extends Fragment implements MyConstants{
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_today, container, false);
         ButterKnife.bind(this, rootView);
-        updateFragment();
+        updateFragment(0);
         return rootView;
     }
 
@@ -76,18 +78,14 @@ public class TodayFragment extends Fragment implements MyConstants{
         ButterKnife.unbind(this);
     }
 
-    void updateFragment() {
+    public void updateFragment(int weatherIndex) {
 
         MainActivity md = (MainActivity) getActivity();
-        if (md == null || md.mainData == null || md.mainData.data == null) {
+        if (md == null || md.mainData == null || md.mainData.data == null || md.mainData.data.weather == null) {
             return;
         }
 
-        wr = md.mainData.data.weather;
-        if (wr == null) {
-            return;
-        }
-        Weather currentWeather = wr.get(0);
+        Weather currentWeather = md.mainData.data.weather.get(weatherIndex);
         if (currentWeather == null) {
             return;
         }
@@ -110,14 +108,15 @@ public class TodayFragment extends Fragment implements MyConstants{
             Picasso.with(App.getAppContext()).load(wiu.value).into(image);
         }
 
-        atmo_pressure.setText(currentWeatherHr.pressure);
-        wind_speed.setText(currentWeatherHr.windspeedKmph);
+        atmo_pressure.setText(currentWeatherHr.pressure + " " + getString(R.string.pressure_description));
+        wind_speed.setText(currentWeatherHr.windspeedKmph + " " + getString(R.string.wind_description));
+        humidity.setText(currentWeatherHr.humidity + "%");
 
         ArrayList<Astronomy> as = currentWeather.astronomy;
         Astronomy astro = as.get(0);
         if (astro != null) {
-            sun_rise.setText(astro.sunrise);
-            moon_rise.setText(astro.moonrise);
+            sun_rise.setText(astro.sunrise +" / " + astro.sunset);
+            moon_rise.setText(astro.moonrise +" / " + astro.moonset);
         }
 
         SharedPreferences mPrefs = App.getAppContext()

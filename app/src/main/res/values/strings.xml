@@ -7,10 +7,23 @@
     <string name="city_text">City</string>
     <string name="days_of_week_text">Days</string>
     <string name="lang_text">Language</string>
-    <string name="temp_text">Temperature in</string>
+    <string name="setting_temp_text">Temperature in</string>
     <string name="fahrenheit">fahrenheit</string>
     <string name="celsius">celsius</string>
     <string name="notification_text">Show notification</string>
-    <string name="wind_for_notif">wind</string>
-    <string name="wind_description">m/s</string>
+    <string name="wind_for_notif">wind </string>
+    <string name="wind_description">km/h</string>
+    <string name="pressure_description">hPa</string>
+    <string name="icon">Weather icon</string>
+    <string name="temp_text">Temperature</string>
+    <string name="feels_like">Feels like</string>
+    <string name="pressure_text">Pressure</string>
+    <string name="moonrise_moonset">Moonrise\nmoonset</string>
+    <string name="wind_text">Wind</string>
+    <string name="humidity_text">Humidity</string>
+    <string name="space"> </string>
+    <string name="sunrise_sunset">Sunrise\nsunset</string>
+    <string name="no_information">No weather information</string>
+    <string name="no_weather_data">No weather current data</string>
+    <string name="update_error">Update error. Will be used stored data.</string>
 </resources>

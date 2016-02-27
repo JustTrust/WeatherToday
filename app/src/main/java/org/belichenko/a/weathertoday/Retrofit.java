@@ -12,7 +12,7 @@ import retrofit.http.GET;
 import retrofit.http.QueryMap;
 
 /**
- * Get weather data
+ * Get weather currentData
  */
 public class Retrofit implements MyConstants {
     private static final String ENDPOINT = "http://api.worldweatheronline.com/free/v2";

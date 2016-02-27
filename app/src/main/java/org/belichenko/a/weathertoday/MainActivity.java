@@ -3,6 +3,7 @@ package org.belichenko.a.weathertoday;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +16,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,8 +30,10 @@ import com.squareup.picasso.Picasso;
 import org.belichenko.a.weathertoday.data_structure.CurrentCondition;
 import org.belichenko.a.weathertoday.data_structure.ErrorData;
 import org.belichenko.a.weathertoday.data_structure.MainData;
+import org.belichenko.a.weathertoday.data_structure.Weather;
 import org.belichenko.a.weathertoday.data_structure.WeatherDesc;
 import org.belichenko.a.weathertoday.data_structure.WeatherIconUrl;
+import org.belichenko.a.weathertoday.fragments.OnItemClickWatcher;
 import org.belichenko.a.weathertoday.fragments.SettingFragment;
 import org.belichenko.a.weathertoday.fragments.TodayFragment;
 import org.belichenko.a.weathertoday.fragments.WeekFragment;
@@ -43,7 +47,8 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class MainActivity extends AppCompatActivity implements MyConstants {
+public class MainActivity extends AppCompatActivity
+        implements MyConstants, OnItemClickWatcher<Weather> {
 
     private static final String TAG = "MainActivity";
     /**
@@ -71,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements MyConstants {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setTitle("Weather today");
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -90,12 +96,13 @@ public class MainActivity extends AppCompatActivity implements MyConstants {
                         .setAction("Action", null).show();
             }
         });
-
+        mSectionsPagerAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(myBroadcastReceiver);
         SharedPreferences sharedPref = getSharedPreferences(STORAGE_OF_SETTINGS, Context.MODE_PRIVATE);
         SharedPreferences.Editor edit = sharedPref.edit();
         if (mainData != null) {
@@ -113,9 +120,18 @@ public class MainActivity extends AppCompatActivity implements MyConstants {
         String md = sharedPref.getString(STORED_MAIN_STRUCTURE, null);
         if (md != null) {
             Gson gson = new Gson();
-            mainData = gson.fromJson(md.toString(), MainData.class);
+            mainData = gson.fromJson(md, MainData.class);
         }
     }
+
+    private BroadcastReceiver myBroadcastReceiver =
+            new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    Log.d(TAG, "onReceive() called with local intent = [" + intent + "]");
+// TODO: 26.02.2016 change fragment on the Today
+                }
+            };
 
     private void updateDataFromSite() {
 
@@ -130,6 +146,8 @@ public class MainActivity extends AppCompatActivity implements MyConstants {
         filter.put("q", city.toString());
         filter.put("format", "json");
         filter.put("num_of_days", String.valueOf(sharedPref.getInt(STORED_DAYS, 4)));
+        filter.put("fx24", "yes"); // first item described all day
+        filter.put("tp", "24"); // time period
         filter.put("lang", sharedPref.getString(STORED_LANG, "ru"));
         filter.put("key", API_KEY);
 
@@ -140,8 +158,7 @@ public class MainActivity extends AppCompatActivity implements MyConstants {
                     if (cd.data.error == null) {
                         mainData = cd;
                         makeNotification();
-                        WeekFragment weekFragment = WeekFragment.getInstance();
-                        weekFragment.updateList();
+                        mSectionsPagerAdapter.notifyDataSetChanged();
                     } else if (cd.data.error.size() > 0) {
                         for (ErrorData errorData : cd.data.error) {
                             Toast.makeText(MainActivity.this, errorData.msg, Toast.LENGTH_LONG).show();
@@ -153,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements MyConstants {
 
             @Override
             public void failure(RetrofitError error) {
-                Toast.makeText(MainActivity.this, error.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, getString(R.string.update_error), Toast.LENGTH_LONG).show();
                 Log.d(TAG, "failure() called with: " + "error = [" + error + "]");
             }
         });
@@ -230,12 +247,12 @@ public class MainActivity extends AppCompatActivity implements MyConstants {
         if (currentDesc == null || currentDesc.value.isEmpty()) {
             return;
         }
-        secondLine = new StringBuffer().append(currentDesc.value)
-                .append(", ")
-                .append(getString(R.string.wind_for_notif))
-                .append(currentCondition.windspeedMiles)
-                .append(R.string.wind_description)
-                .toString();
+        secondLine = currentDesc.value + ", "
+                + getString(R.string.wind_for_notif)
+                + " "
+                + currentCondition.windspeedKmph
+                + " "
+                + getString(R.string.wind_description);
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this,
@@ -267,6 +284,12 @@ public class MainActivity extends AppCompatActivity implements MyConstants {
         }
     }
 
+    @Override
+    public void onItemClick(View v, int position, Weather item) {
+        TodayFragment.getInstance().updateFragment(position);
+        mViewPager.setCurrentItem(0);
+    }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -290,10 +313,16 @@ public class MainActivity extends AppCompatActivity implements MyConstants {
             return null;
         }
 
+
         @Override
         public int getCount() {
             // Show 3 total pages.
             return 3;
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         @Override

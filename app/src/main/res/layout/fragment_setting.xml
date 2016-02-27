@@ -144,9 +144,9 @@
             android:layout_marginEnd="@dimen/appbar_padding_top"
             android:layout_marginRight="@dimen/appbar_padding_top"
             android:layout_weight="0.6"
-            android:text="@string/temp_text"
+            android:text="@string/setting_temp_text"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            tools:text="@string/temp_text" />
+            tools:text="@string/setting_temp_text" />
 
         <RadioGroup
             android:id="@+id/rg_temperath"
@@ -192,7 +192,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/show_notif_checkBox"
-            android:layout_weight="0.4"/>
+            android:layout_weight="0.4"
+            android:layout_marginStart="6dp"
+            android:layout_marginLeft="6dp"/>
 
     </LinearLayout>
 

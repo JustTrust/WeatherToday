@@ -18,8 +18,11 @@
                 android:id="@+id/iconW"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/fragment_week_pading"
-                tools:src="@mipmap/ic_launcher" />
+                tools:src="@mipmap/ic_launcher"
+                android:paddingBottom="@dimen/fragment_week_pading"
+                android:paddingRight="@dimen/fragment_week_pading"
+                android:paddingTop="12dp"
+                android:paddingLeft="@dimen/fragment_week_pading" />
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -31,15 +34,27 @@
                     android:id="@+id/text_dataW"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/fragment_week_pading"
-                    tools:text="2016-02-02" />
+                    android:textAlignment="viewEnd"
+                    tools:text="2016-02-02"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:gravity="end"
+                    android:textStyle="bold"
+                    android:paddingLeft="@dimen/fragment_week_pading"
+                    android:paddingTop="@dimen/fragment_week_pading"
+                    android:paddingRight="@dimen/fragment_week_pading"
+                    android:paddingBottom="3dp" />
 
                 <TextView
                     android:id="@+id/text_informationW"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/fragment_week_pading"
-                    tools:text="Общие описание" />
+                    tools:text="Summary"
+                    android:textColor="@color/textColor"
+                    android:textStyle="bold"
+                    android:paddingLeft="@dimen/appbar_padding_top"
+                    android:paddingTop="3dp"
+                    android:paddingRight="@dimen/fragment_week_pading"
+                    android:paddingBottom="@dimen/fragment_week_pading" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -54,54 +69,84 @@
         <TableRow>
 
             <TextView
-                android:id="@+id/name_of_temperatW"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/fragment_week_pading"
-                android:text="Температура" />
+                android:text="@string/temp_text"
+                android:textStyle="bold"
+                android:textColor="@color/textColor" />
 
             <TextView
                 android:id="@+id/text_temperatW"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/fragment_week_pading"
-                tools:text="30 C" />
+                tools:text="30 C"
+                android:textColor="@color/textColor"
+                android:textStyle="bold" />
 
         </TableRow>
 
         <TableRow>
 
             <TextView
-                android:id="@+id/name_of_temperat_senceW"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/fragment_week_pading"
-                android:text="Ощущение температуры" />
+                android:text="@string/feels_like"
+                android:textStyle="bold"
+                android:textColor="@color/textColor" />
 
             <TextView
                 android:id="@+id/text_temperat_senceW"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/fragment_week_pading"
-                tools:text="Чувствувать температуру" />
+                tools:text="30 C"
+                android:textColor="@color/textColor"
+                android:textStyle="bold" />
 
         </TableRow>
 
         <TableRow>
 
             <TextView
-                android:id="@+id/name_of_atmosphere_pressureW"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/fragment_week_pading"
-                android:text="Атмосферное давление" />
+                android:text="@string/wind_text"
+                android:textStyle="bold"
+                android:textColor="@color/textColor" />
 
             <TextView
-                android:id="@+id/text_atmosphere_pressureW"
+                android:id="@+id/wind_speed_id"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColor"
+                android:padding="@dimen/fragment_week_pading"
+                android:textStyle="bold"
+                tools:text="5 km/h" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/fragment_week_pading"
-                tools:text="Атмосферное давление" />
+                android:text="@string/pressure_text"
+                android:textStyle="bold"
+                android:textColor="@color/textColor" />
+
+            <TextView
+                android:id="@+id/atmo_press_id"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/fragment_week_pading"
+                tools:text="1001"
+                android:textColor="@color/textColor"
+                android:textStyle="bold"/>
         </TableRow>
     </TableLayout>
 
