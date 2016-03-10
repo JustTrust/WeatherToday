@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecycleWeekAdapter extends RecyclerView.Adapter<RecycleWeekAdapter.ViewHolder>
-        implements MyConstants{
+        implements MyConstants {
 
     private OnItemClickWatcher<Weather> watcher;
     private List<Weather> listOfDays;
@@ -34,6 +34,7 @@ public class RecycleWeekAdapter extends RecyclerView.Adapter<RecycleWeekAdapter.
         this.context = cont;
         this.watcher = watcher;
     }
+
     @Override
     public RecycleWeekAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater mInflater = LayoutInflater.from(context);
@@ -86,7 +87,11 @@ public class RecycleWeekAdapter extends RecyclerView.Adapter<RecycleWeekAdapter.
 
     @Override
     public int getItemCount() {
-        return listOfDays.size();
+        if (listOfDays == null) {
+            return 0;
+        } else {
+            return listOfDays.size();
+        }
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

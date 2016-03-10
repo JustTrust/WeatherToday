@@ -3,7 +3,6 @@ package org.belichenko.a.weathertoday;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,7 +15,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -96,13 +94,12 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
-        mSectionsPagerAdapter.notifyDataSetChanged();
+        updateDataFromSite();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(myBroadcastReceiver);
         SharedPreferences sharedPref = getSharedPreferences(STORAGE_OF_SETTINGS, Context.MODE_PRIVATE);
         SharedPreferences.Editor edit = sharedPref.edit();
         if (mainData != null) {
@@ -123,15 +120,6 @@ public class MainActivity extends AppCompatActivity
             mainData = gson.fromJson(md, MainData.class);
         }
     }
-
-    private BroadcastReceiver myBroadcastReceiver =
-            new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    Log.d(TAG, "onReceive() called with local intent = [" + intent + "]");
-// TODO: 26.02.2016 change fragment on the Today
-                }
-            };
 
     private void updateDataFromSite() {
 
@@ -211,11 +199,14 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 protected Bitmap doInBackground(String... params) {
                     try {
-                        return Picasso.with(App.getAppContext())
+                        Picasso.with(App.getAppContext())
                                 .load(params[0])
                                 .placeholder(R.mipmap.ic_launcher)
                                 .error(R.mipmap.ic_launcher)
                                 .get();
+                        return null;
+                    }catch (IllegalStateException e) {
+                        e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
