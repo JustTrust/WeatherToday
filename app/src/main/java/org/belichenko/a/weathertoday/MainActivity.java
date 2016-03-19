@@ -94,7 +94,11 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
-        updateDataFromSite();
+        // if we open activity from notification don't update data
+        Intent i= getIntent();
+        if (i.getBooleanExtra(UPDATE_DATA, true)) {
+            updateDataFromSite();
+        }
     }
 
     @Override
@@ -247,6 +251,7 @@ public class MainActivity extends AppCompatActivity
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        notificationIntent.putExtra(UPDATE_DATA, false);
         PendingIntent contentIntent = PendingIntent.getActivity(this,
                 NOTIFY_ID, notificationIntent,
                 PendingIntent.FLAG_CANCEL_CURRENT);

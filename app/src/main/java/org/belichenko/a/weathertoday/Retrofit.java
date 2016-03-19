@@ -1,13 +1,17 @@
 package org.belichenko.a.weathertoday;
 
 
+import com.squareup.okhttp.OkHttpClient;
+
 import org.belichenko.a.weathertoday.data_structure.MainData;
 import org.belichenko.a.weathertoday.search_structure.MainSearch;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
+import retrofit.client.OkClient;
 import retrofit.http.GET;
 import retrofit.http.QueryMap;
 
@@ -30,8 +34,12 @@ public class Retrofit implements MyConstants {
     }
 
     public static void initialize() {
+        final OkHttpClient okHttpClient = new OkHttpClient();
+        okHttpClient.setReadTimeout(30, TimeUnit.SECONDS);
+        okHttpClient.setConnectTimeout(30, TimeUnit.SECONDS);
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(ENDPOINT)
+                .setClient(new OkClient(okHttpClient))
                 .setLogLevel(RestAdapter.LogLevel.BASIC)
                 .build();
         apiInterface = restAdapter.create(ApiInterface.class);
