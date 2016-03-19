@@ -246,6 +246,7 @@ public class MainActivity extends AppCompatActivity
                 + getString(R.string.wind_description);
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent contentIntent = PendingIntent.getActivity(this,
                 NOTIFY_ID, notificationIntent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
